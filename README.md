@@ -72,18 +72,10 @@ This predicts a startup envelope ringing period of 1/941 ≈ 1.06ms. Simulated p
 
 **Objective:** Confirm the simulation setup by comparing open-loop steady-state results against textbook formulas, then explain the gap between ideal and real-component results.
 
-![Phase 1 Schematic](Waveforms%20and%20Screenshots/Phase%201%20-%20Baseline/schematic.png)
-
-![Inductor Current — Baseline](Waveforms%20and%20Screenshots/Phase%201%20-%20Baseline/IL_baseline.png)
-
 The inductor current plot shows three distinct regions:
 1. **0–0.4ms:** Startup ramp, inductor charging from zero
 2. **0.4–1.4ms:** Startup ringing envelope (LC tank settling, f₀ ≈ 941 Hz)
 3. **1.5–5ms:** Steady-state CCM triangular ripple, average ≈ 5.76A
-
-![Load Current — Baseline](Waveforms%20and%20Screenshots/Phase%201%20-%20Baseline/Iload_baseline.png)
-
-![Phase 1 Comparison](Graphs/graph1_phase1_comparison.png)
 
 | Metric | Theory | Sim — Ideal | Sim — Real |
 |---|---|---|---|
@@ -102,31 +94,17 @@ The inductor current plot shows three distinct regions:
 
 #### 2a — Inductor Ripple vs L (L sweep, fixed fs=25kHz)
 
-![IL Ripple vs L](Waveforms%20and%20Screenshots/Phase%202%20-%20Design%20Space/IL_L_sweep.png)
-
-![Ripple vs L Theory](Graphs/graph2_ripple_vs_L.png)
-
 All 8 traces settle to the same average inductor current (~5.5–6A) despite wildly different ripple amplitudes. **Average IL in CCM equals Iout = Vout/Rload, independent of L.** L only controls the AC ripple magnitude, not the DC operating point.
 
 #### 2b — Inductor Ripple vs Switching Frequency (fs sweep, fixed L=143µH)
-
-![IL Ripple vs Frequency](Waveforms%20and%20Screenshots/Phase%202%20-%20Design%20Space/IL_freq_sweep.png)
-
-![Ripple vs Frequency Theory](Graphs/graph3_ripple_vs_freq.png)
 
 At 10kHz the ripple period is visible and large (~2.1A pk-pk). At 200kHz the ripple is too fast to resolve visually and is tiny (~0.1A pk-pk). This is the core tradeoff in switching regulator design: **higher fs → smaller passives and less ripple, but more switching loss per cycle.**
 
 #### 2c — ESR Ripple Contribution
 
-![ESR Comparison](Waveforms%20and%20Screenshots/Phase%202%20-%20Design%20Space/Vout_ESR_compare.png)
-
-![ESR Breakdown](Graphs/graph4_esr_ripple.png)
-
 At 25kHz with C=200µF, the capacitive impedance is 1/(2π·25k·200µ) = **31.8mΩ** — comparable to the 20mΩ ESR. Both terms are non-negligible. The total output ripple ≈ ΔVc (capacitive) + ΔI·ESR (resistive). The ESR component is in phase with inductor current (peaks at switching transitions), while the capacitive component peaks mid-cycle — their phase difference means they don't add directly.
 
 #### 2d — Line and Load Regulation (Open Loop)
-
-![Line and Load Regulation](Waveforms%20and%20Screenshots/Phase%202%20-%20Design%20Space/Vout_line_load_reg.png)
 
 With fixed D=0.5, Vout follows Vin·D — stepping Vin from 9V→15V shifts Vout proportionally with no correction. Similarly, varying load resistance causes Vout to sag or rise depending on component losses. **This is the motivation for Phase 4: open-loop converters cannot maintain regulation against line or load disturbances.**
 
@@ -185,12 +163,6 @@ Vref (1V) ───────────────────────�
 **Controller type — Bang-bang (hysteretic):** The gate drive compares Vfb directly against Vref with no PWM carrier: `Gate = if(Vfb < Vref, 12V, 0V)`. This is a valid closed-loop topology but has no integrator, so a small steady-state error persists (~0.1–0.15V on Vfb). A Type II compensator with an integrator would eliminate this error completely.
 
 #### Closed-Loop Transient Response
-
-![Closed Loop Full](Waveforms%20and%20Screenshots/Phase%204%20-%20Closed%20Loop/closed_loop_full.png)
-
-![Load Step Dip](Waveforms%20and%20Screenshots/Phase%204%20-%20Closed%20Loop/load_step_dip.png)
-
-![Load Step Spike](Waveforms%20and%20Screenshots/Phase%204%20-%20Closed%20Loop/load_step_spike.png)
 
 | Event | Value |
 |---|---|
